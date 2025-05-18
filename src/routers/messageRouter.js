@@ -9,7 +9,8 @@ router.get("/", (req, res) => {
 });
 
 router.post("/message", upload.single("file"), (req, res) => {
-  whatsappclient.sendMessage("918527878887@c.us", "hii");
+  const { phoneNumber, message } = req.body;
+  whatsappclient.sendMessage(`91${phoneNumber}@c.us`, message);
   res.send("mssg");
 });
 

@@ -50,11 +50,22 @@ function sendMessage(phoneNumber, message, clientId, file) {
   }
 }
 
+// const whatsappclient = new Client({
+//   webVersionCache: {
+//     type: "remote",
+//     remotePath:
+//       "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
+//   },
+// });
+
 const whatsappclient = new Client({
   webVersionCache: {
     type: "remote",
     remotePath:
       "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
+  },
+  puppeteer: {
+    args: ["--no-sandbox", "--disable-setuid-sandbox"], // Add these flags
   },
 });
 
@@ -69,7 +80,13 @@ whatsappclient.on("message", async (msg) => {
   try {
     if (msg.from != "status@broadcast") {
       const contact = await msg.getContact();
-      console.log(contact, msg.from);
+      console.log("--->", msg, "\n\n");
+
+      if (msg.body.startsWith("SEND_")) {
+        const responseMessage = msg.body; // The same message to send back
+        await whatsappclient.sendMessage(msg.from, responseMessage);
+        console.log(`Message sent back to ${msg.from}: ${responseMessage}`);
+      }
     }
   } catch (error) {
     console.error(error);
